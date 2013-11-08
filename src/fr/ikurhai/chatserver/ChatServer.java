@@ -29,6 +29,8 @@ public class ChatServer {
 	 */
 	public ChatServer() {
 
+		// Paramétrage des différents attributs du serveur
+		
 		this.s = new Scanner(System.in);
 
 		System.out.println("- ChatServer -");
@@ -64,20 +66,28 @@ public class ChatServer {
 
 			System.out.println("Listening on " + port + "...");			
 
+			// Boucle d'écoute du serveur
 			while (true) {
 
+				// On attend une connexion d'un client
 				clientSocket = serverSocket.accept();	
 
+				// Une fois le client connecté, on crée le buffer de lecture des données envoyées par le nouveau client
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				// Et on crée le flux d'envoi de données vers ce client
 				out = new PrintWriter(clientSocket.getOutputStream());
 
+				// Création du processus de réception des messages d'un client
+				// (in.readLine() récupère le nom que le client a envoyé)
 				new ReceiverThread(in.readLine(), clientSocket, in).start();
 
+				// Envoi du nom et du MOTD du serveur au nouveau client
 				out.println(name);
 				out.flush();
 				out.println(motd);
 				out.flush();
 				
+				// Fin de la boucle, on attend la connexion d'un nouveau client
 			}
 
 		} catch (IOException e) {
