@@ -16,28 +16,28 @@ import java.util.Scanner;
  * @version 0.1
  */
 public class ChatServer {
-	
+
 	private ServerSocket serverSocket;
 	private int port;
 	private String name;
 	private Scanner s;	
-	
-	
+
+
 	/**
 	 * Constructeur par défault
 	 */
 	public ChatServer() {
-		
+
 		this.s = new Scanner(System.in);
-		
+
 		System.out.println("- ChatServer -");
-		
+
 		System.out.print("Enter server name: ");		
 		this.name = s.nextLine();
-		
+
 		System.out.print("Enter port: ");		
 		this.port = s.nextInt();
-		
+
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -52,38 +52,27 @@ public class ChatServer {
 	public void run() {
 
 		Socket clientSocket; 
-		PrintWriter out;    
 		BufferedReader in;
-		String message;
-		
+		PrintWriter out; 
+
 		try {
-			
-			System.out.println("Listening on " + port + ".");			
-			
+
+			System.out.println("Listening on " + port + "...");			
+
 			while (true) {
-				
-				System.out.println("Waiting connections...");
 
-				clientSocket = serverSocket.accept();
+				clientSocket = serverSocket.accept();	
+
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				
-				System.out.println("Connection detected!");
-
 				out = new PrintWriter(clientSocket.getOutputStream());
-				out.println("You are not connected on " + name + ".");
+
+				new ReceiverThread(in.readLine(), clientSocket, in).start();
+
+				out.println("You are now connected on " + name + ".");
 				out.flush();
-				
-				do {
-					message = in.readLine();
-					System.out.println("RECEIVE> " + message);
-				} while (!message.equals("/quit"));
-				
-				clientSocket.close();
-				
-				System.out.println("Connection interrupted!");
 
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
