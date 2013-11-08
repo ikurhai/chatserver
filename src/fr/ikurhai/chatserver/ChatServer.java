@@ -1,6 +1,8 @@
 package fr.ikurhai.chatserver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,8 +19,8 @@ public class ChatServer {
 	
 	private ServerSocket serverSocket;
 	private int port;
-	private Scanner s;
 	private String name;
+	private Scanner s;	
 	
 	
 	/**
@@ -50,28 +52,36 @@ public class ChatServer {
 	public void run() {
 
 		Socket clientSocket; 
-		PrintWriter out;        
+		PrintWriter out;    
+		BufferedReader in;
+		String message;
 		
 		try {
 			
-			System.out.println("Listening on " + port + ".");
+			System.out.println("Listening on " + port + ".");			
 			
 			while (true) {
 				
 				System.out.println("Waiting connections...");
 
 				clientSocket = serverSocket.accept();
-
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				
 				System.out.println("Connection detected!");
 
 				out = new PrintWriter(clientSocket.getOutputStream());
 				out.println("You are not connected on " + name + ".");
 				out.flush();
-				out.println("Disconnected.");
-				out.flush();
+				
+				do {
+					message = in.readLine();
+					System.out.println("RECEIVE> " + message);
+				} while (!message.equals("/quit"));
 				
 				clientSocket.close();
 				
+				System.out.println("Connection interrupted!");
+
 			}
 			
 		} catch (IOException e) {
