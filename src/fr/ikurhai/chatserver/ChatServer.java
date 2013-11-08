@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -22,6 +24,7 @@ public class ChatServer {
 	private String name;
 	private String motd;
 	private Scanner s;	
+	private List<ReceiverThread> receivers;
 
 
 	/**
@@ -32,6 +35,7 @@ public class ChatServer {
 		// Paramétrage des différents attributs du serveur
 		
 		this.s = new Scanner(System.in);
+		this.receivers = new ArrayList<ReceiverThread>();
 
 		System.out.println("- ChatServer -");
 
@@ -61,6 +65,8 @@ public class ChatServer {
 		Socket clientSocket; 
 		BufferedReader in;
 		PrintWriter out; 
+		String clientName;
+		ReceiverThread receiver;
 
 		try {
 
@@ -77,9 +83,12 @@ public class ChatServer {
 				// Et on crée le flux d'envoi de données vers ce client
 				out = new PrintWriter(clientSocket.getOutputStream());
 
-				// Création du processus de réception des messages d'un client
-				// (in.readLine() récupère le nom que le client a envoyé)
-				new ReceiverThread(in.readLine(), clientSocket, in).start();
+				// Création du processus de réception des messages d'un client via l'objet Client
+				clientName = in.readLine();
+				receiver = new ReceiverThread(clientName, clientSocket, in);
+				receiver.start();
+				
+				receivers.add(receiver);
 
 				// Envoi du nom et du MOTD du serveur au nouveau client
 				out.println(name);

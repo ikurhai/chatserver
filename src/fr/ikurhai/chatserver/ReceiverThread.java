@@ -12,7 +12,7 @@ import java.net.Socket;
  */
 public class ReceiverThread extends Thread {
 
-	private String user;
+	public String user;
 	private Socket socket;
 	private BufferedReader in;
 	
@@ -50,7 +50,7 @@ public class ReceiverThread extends Thread {
 
 			// Fermeture du socket
 			socket.close();
-
+ 
 			System.out.println("Connection closed: " + user + ".");
 
 		} catch (Exception e) {
