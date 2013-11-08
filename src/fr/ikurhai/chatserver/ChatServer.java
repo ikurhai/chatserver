@@ -13,13 +13,14 @@ import java.util.Scanner;
  * Classe serveur du chat
  * 
  * @author ikurhai
- * @version 0.1
+ * @version 0.2
  */
 public class ChatServer {
 
 	private ServerSocket serverSocket;
 	private int port;
 	private String name;
+	private String motd;
 	private Scanner s;	
 
 
@@ -37,6 +38,10 @@ public class ChatServer {
 
 		System.out.print("Enter port: ");		
 		this.port = s.nextInt();
+		s.nextLine();
+
+		System.out.print("Enter MOTD: ");		
+		this.motd = s.nextLine();
 
 		try {
 			serverSocket = new ServerSocket(port);
@@ -68,9 +73,11 @@ public class ChatServer {
 
 				new ReceiverThread(in.readLine(), clientSocket, in).start();
 
-				out.println("You are now connected on " + name + ".");
+				out.println(name);
 				out.flush();
-
+				out.println(motd);
+				out.flush();
+				
 			}
 
 		} catch (IOException e) {
